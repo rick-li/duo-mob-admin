@@ -24,27 +24,31 @@ module.exports = function(grunt) {
 
     connect: {
       options: {
-        base: 'app/'
+        base: '.'
       },
       webserver: {
         options: {
+          hostname: '*',
           port: 8888,
           keepalive: true
         }
       },
       devserver: {
         options: {
+          hostname: '*',
           port: 8888
         }
       },
       testserver: {
         options: {
+          hostname: '*',
           port: 9999
         }
       },
       coverage: {
         options: {
           base: 'coverage/',
+          hostname: '*',
           port: 5555,
           keepalive: true
         }
@@ -91,10 +95,10 @@ module.exports = function(grunt) {
         },
         dest: './app/assets/app.js',
         src: [
-          'lib/angular.js',
-          'lib/angular-route.js',
-          'lib/angular-animate.js',
-          'lib/angular-touch.js',
+          'lib/angular/angular.min.js',
+          'lib/angular/angular-route.min.js',
+          'lib/underscore-min.js',
+          'lib/baidu/Baidu-Frontia-JS-1.0.0.js',
           'app/scripts/homePages.js',
           'app/scripts/app.js',
           //place your JavaScript files here

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>baidu login callback</title>
+</head>
+<body>
+    <script type="text/javascript">
+    (function(frontia) {
+        var AK = "jX5URdvxVdL2Y4ZuvXKRdABw"
+        frontia.init(AK);
+        if (user && user.getType() === 'user' && user.getMediaType() === 'baidu') {
+            console.log("User logged in.");
+            var userinfo = 'name = ' + user.getName() + '<br>' +
+                'token = ' + user.getAccessToken() + '<br>' +
+                'social_id = ' + user.getId() + '<br>' +
+                'expires_in = ' + user.getExpiresIn();
+            console.log(userinfo);
+        }
+    }(baidu.frontia));
+    </script>
+    <script src="../../lib/baidu/Baidu-Frontia-JS-1.0.0.js"></script>
+
+</html>
