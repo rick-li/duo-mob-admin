@@ -11,6 +11,7 @@
       <include path="/**.html" expiration ="access 1 months" />
       <include path="/app/**.*" expiration ="access 1 months" />
       <include path="/assets/**.*" expiration ="access 1 months" />
+      <include path="/lib/**.*" expiration ="access 1 months" />
   </static-files>
 
 </du-web-app>
