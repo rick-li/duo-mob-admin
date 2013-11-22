@@ -245,27 +245,16 @@ function(){var a=i.call(arguments);H.call(a,this._wrapped);return v(c.apply(b,a)
 true;return this};m.prototype.value=function(){return this._wrapped}}).call(this);
 
 
-;angular.module('app.homePages', [])
-
-  .factory('welcomeMessage', function() {
-    return function() {
-      return 'Welcome Home...';
-    };
-  })
-
-  .controller('HomeCtrl', function($scope, welcomeMessage) {
-    $scope.welcome_message = welcomeMessage();
-  });
-;var app = angular.module('myApp', ['ngRoute', 'app.homePages']);
+;var app = angular.module('myApp', ['ngRoute']);
 
   app.constant('TPL_PATH', 'templates')
 
-  app.config(function($routeProvider, TPL_PATH) {
-    $routeProvider.when('/',{
-      controller : 'HomeCtrl',
-      templateUrl : TPL_PATH + '/home.html'
-    });
-  });
+  // app.config(function($routeProvider, TPL_PATH) {
+  //   $routeProvider.when('/',{
+  //     controller : 'HomeCtrl',
+  //     templateUrl : TPL_PATH + '/home.html'
+  //   });
+  // });
   app.constant('AK', 'jX5URdvxVdL2Y4ZuvXKRdABw')
   app.constant('frontia', baidu.frontia)
 

@@ -99,7 +99,6 @@ module.exports = function(grunt) {
           'lib/angular/angular-route.min.js',
           'lib/underscore-min.js',
           
-          'app/scripts/homePages.js',
           'app/scripts/app.js',
           //place your JavaScript files here
         ]

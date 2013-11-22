@@ -1,13 +1,13 @@
-var app = angular.module('myApp', ['ngRoute', 'app.homePages']);
+var app = angular.module('myApp', ['ngRoute']);
 
   app.constant('TPL_PATH', 'templates')
 
-  app.config(function($routeProvider, TPL_PATH) {
-    $routeProvider.when('/',{
-      controller : 'HomeCtrl',
-      templateUrl : TPL_PATH + '/home.html'
-    });
-  });
+  // app.config(function($routeProvider, TPL_PATH) {
+  //   $routeProvider.when('/',{
+  //     controller : 'HomeCtrl',
+  //     templateUrl : TPL_PATH + '/home.html'
+  //   });
+  // });
   app.constant('AK', 'jX5URdvxVdL2Y4ZuvXKRdABw')
   app.constant('frontia', baidu.frontia)
 
