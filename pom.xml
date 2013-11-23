@@ -7,6 +7,12 @@
 	<packaging>war</packaging>
 	
 	<dependencies>
+<dependency>
+	<groupId>org.eclipse.osgi</groupId>
+	<artifactId>org.eclipse.osgi</artifactId>
+	<version>3.6.0.v20100517</version>
+</dependency>
+            
 		<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -67,6 +73,15 @@
 	</pluginRepositories>
 	<build>
         <plugins>
+            <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-war-plugin</artifactId>
+    
+    <configuration>
+ <packagingExcludes>node_modules/**</packagingExcludes>
+ <warSourceExcludes>node_modules/**</warSourceExcludes>
+    </configuration>
+</plugin>
         	<plugin>
             	<groupId>org.apache.maven.plugins</groupId>
             	<artifactId>maven-compiler-plugin</artifactId>
@@ -75,6 +90,14 @@
                 	<target>1.6</target>
             	</configuration>
         	</plugin>
+            <plugin>
+                <groupId>com.baidu.bae.maven.jetty</groupId>
+                <artifactId>bae-maven-jetty-plugin</artifactId>
+                <version>8.0.0.M3</version>
+                <configuration>
+                    <jettyport>8080</jettyport>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.baidu.bae.maven</groupId>
                 <artifactId>bae-maven-plugin</artifactId>

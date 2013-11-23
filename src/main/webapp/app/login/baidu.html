@@ -4,22 +4,38 @@
 <head>
     <title>baidu login callback</title>
 </head>
+
 <body>
-    <script src="../../lib/baidu/Baidu-Frontia-JS-1.0.0.js"></script>
+    
+    <script src="../../lib/baidu/baidu-frontia-js-full-1.0.0.js"></script>
     <script type="text/javascript">
     (function(frontia) {
         var AK = "jX5URdvxVdL2Y4ZuvXKRdABw"
+        var redirect_url = "http://duomobpanel.duapp.com/app/login/baidu.html"
         frontia.init(AK);
-        if (user && user.getType() === 'user' && user.getMediaType() === 'baidu') {
-            console.log("User logged in.");
-            var userinfo = 'name = ' + user.getName() + '<br>' +
-                'token = ' + user.getAccessToken() + '<br>' +
-                'social_id = ' + user.getId() + '<br>' +
-                'expires_in = ' + user.getExpiresIn();
-            console.log(userinfo);
-        }
+
+
+        frontia.social.setLoginCallback({
+            success: function(user) {
+
+                // 如果用户已经登录，则显示用户的登录信息
+                console.log("User logged in.");
+                var userinfo = 'name = ' + user.getName() + '<br>' +
+                    'token = ' + user.getAccessToken() + '<br>' +
+                    'social_id = ' + user.getId() + '<br>' +
+                    'expires_in = ' + user.getExpiresIn();
+                console.log(userinfo);
+                parent.loginSuccessCallback(user)
+            },
+            error: function(error) {
+                console.log('error');
+                console.log(error)
+            }
+        });
+
+
     }(baidu.frontia));
     </script>
-    
+
 
 </html>
