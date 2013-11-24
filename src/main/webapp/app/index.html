@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
@@ -16,187 +17,233 @@
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
 
 
-        <style type="text/css">
-      .login-pop{
-        
+    <style type="text/css">
+    .login-popout {
         position: absolute;
-        top:10%;
-        left:10%;
-      }
+        left:30%;
+        width:600px;
+        z-index: 50;
+    }
+    .article-popout{
+       position: absolute;
+        left:0px;
+
+        width:960px;
+        z-index: 50;
+    }
+    .article-popout .panel-heading{
+      position: relative;
+    }
+    .duo-header-nav{
+      margin-left: 10px;
+    }
+    .panel-heading a{
+      position: absolute;
+      right: 15px;
+    .form-signin {
+        max-width: 330px;
+        padding: 15px;
+        margin: 0 auto;
+    }
+    .form-signin .form-signin-heading, .form-signin .checkbox {
+        margin-bottom: 10px;
+    }
+    .form-signin .checkbox {
+        font-weight: normal;
+    }
+    .form-signin .form-control {
+        position: relative;
+        font-size: 16px;
+        height: auto;
+        padding: 10px;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    .form-signin .form-control:focus {
+        z-index: 2;
+    }
+    .form-signin input[type="text"] {
+        margin-bottom: -1px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    .account-wall {
+        margin-top: 20px;
+        padding: 40px 0px 20px 0px;
+        background-color: #f7f7f7;
+        -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+        -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    }
+    .login-title {
+        color: #555;
+        font-size: 18px;
+        font-weight: 400;
+        display: block;
+    }
+    .profile-img {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 10px;
+        display: block;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+    }
+    .need-help {
+        margin-top: 10px;
+    }
+    .new-account {
+        display: block;
+        margin-top: 10px;
+    }
     </style>
-  </head>
+</head>
 
-  <body>
-
+<body>
+    
     <div id="wrapper">
 
-      <!-- Sidebar -->
-      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="index.html">Mobile Admin</a>
-        </div>
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Mobile Admin</a>
+            </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-          <ul class="nav navbar-nav side-nav" ng-controller="MenuCtrl">
-            <li class="active"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a></li>
-            <li><a href="index.html#user"><i class="fa fa-group"></i> Users</a></li>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav" ng-controller="MenuCtrl">
+                    <li class="active"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a>
+                    </li>
+                    <li><a href="index.html#user"><i class="fa fa-group"></i> Users</a>
+                    </li>
 
 
-          </ul>
+                </ul>
 
-          <ul class="nav navbar-nav navbar-right navbar-user" ng-controller="UserCtrl">
+                <ul class="nav navbar-nav navbar-right navbar-user" ng-controller="UserCtrl">
 
-            <li class="dropdown user-dropdown">
-              <a href="#" class="dropdown-toggle" ><i class="fa fa-globe" data-toggle="dropdown"></i> 中文
+                    <li class="dropdown user-dropdown">
+                        <a href="#" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文
                 <b class="caret"></b>
 
               </a>
-              <ul class="dropdown-menu">
-                <li><a href="#"> English</a></li>
-                <li><a href="#"> German</a></li>
-                
-                <li class="divider"></li>
-                
-              </ul>
-            </li>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"> English</a>
+                            </li>
+                            <li><a href="#"> German</a>
+                            </li>
 
-            <li class="dropdown messages-dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages <span class="badge">7</span> <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li class="dropdown-header">7 New Messages</li>
-                <li class="message-preview">
-                  <a href="#">
-                    <span class="avatar"><img src="http://placehold.it/50x50"></span>
-                    <span class="name">John Smith:</span>
-                    <span class="message">Hey there, I wanted to ask you something...</span>
-                    <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
-                  </a>
-                </li>
-                <li class="divider"></li>
-                
-                <li><a href="#">View Inbox <span class="badge">7</span></a></li>
-              </ul>
-            </li>
-            
-            <li class="dropdown user-dropdown">
-              <a href="#" class="dropdown-toggle" ><i class="fa fa-user"></i> {{user.accountName}}
-                <!-- <b class="caret"></b> -->
+                            <li class="divider"></li>
 
+                        </ul>
+                    </li>
+
+                    <li class="dropdown messages-dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages <span class="badge">7</span> <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-header">7 New Messages</li>
+                            <li class="message-preview">
+                                <a href="#">
+                                    <span class="avatar">
+                                        <!-- <img src="http://placehold.it/50x50"> -->
+                                    </span>
+                                    <span class="name">John Smith:</span>
+                                    <span class="message">Hey there, I wanted to ask you something...</span>
+                                    <span class="time"><i class="fa fa-clock-o"></i> 4:34 PM</span>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+
+                            <li><a href="#">View Inbox <span class="badge">7</span></a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown user-dropdown">
+                        <a href="#" class="dropdown-toggle"><i class="fa fa-user"></i>{{currentUser.attributes.username}}
               </a>
-             
-            </li>
+
+                    </li>
 
 
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </nav>
-
-      <div id="page-wrapper">
-        <div class="login-pop">
-            <iframe src="javascript:;" height="561px" width="700px" frameBorder="0px"></iframe>
-        </div>
-        <div ng-controller="ContentCtrl">
-        <div ng-view></div>
-        </div>
-
-
-
-        <div class="row">
-
-         
-          <div class="col-lg-4">
-            <div class="panel panel-primary">
-              <div class="panel-heading">
-                
-                <h3 class="panel-title">文章</h3>
-              </div>
-              <div class="panel-body">
-                <div class="table-responsive">
-                  <table class="table table-bordered table-hover table-striped tablesorter">
-                    <thead>
-                      <tr>
-                        <th>Order <i class="fa fa-sort"></i></th>
-                        <th>Title <i class="fa fa-sort"></i></th>
-                        <th>Intro<i class="fa fa-sort"></i></th>
-                        <th>Date <i class="fa fa-sort"></i></th>
-                        <th>   </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>10/21/2013</td>
-                        <td>3:29 PM</td>
-                        <td>$321.33</td>
-                        <td><button type="button" class="btn btn-default">Edit</button>
-                        </td>
-                      </tr>
-                     
-                    </tbody>
-                  </table>
-                </div>
-                <div class="text-right">
-                  <a href="#">View All Transactions <i class="fa fa-arrow-circle-right"></i></a>
-                </div>
-              </div>
+                </ul>
             </div>
-          </div>
-        </div><!-- /.row -->
+            <!-- /.navbar-collapse -->
+        </nav>
 
-      </div><!-- /#page-wrapper -->
+        <div id="page-wrapper">
+            <div ng-controller="UserCtrl">
+                <div ng-if="!currentUser">
+                    <ng-include src="'templates/login.html'"></ng-include>
 
-    </div><!-- /#wrapper -->
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div class="row">
+
+
+                <div class="col-lg-12">
+                    <div ng-controller="ContentCtrl">
+
+                        <ng-include src="'templates/content.html'"></ng-include>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
 
     <!-- Bootstrap core JavaScript -->
-        <script type="text/javascript" src="../lib/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="../lib/jquery-1.10.2.min.js"></script>
     <script src="../../lib/bootstrap.js"></script>
     <!-- Page Specific Plugins -->
-    
+
 
     <script src="../lib/tablesorter/jquery.tablesorter.js"></script>
     <script src="../lib/tablesorter/tables.js"></script>
-        <script src="../lib/baidu/baidu-frontia-js-full-1.0.0.js"></script>
-
+    <script src="../lib/parse-1.2.13.min.js"></script>
     <script src="./assets/app.js"></script>
     <script>
-      $(document).ready(function() {
-        console.log('ready');
-        var AK = 'jX5URdvxVdL2Y4ZuvXKRdABw'
-if(window.location.href.indexOf('localhost')!=-1){
-  $('.login-pop').remove();
-  window.user = {
-    accountName: 'racke'
-  }
-  angular.bootstrap(document, ['myApp']);
-}else{
-  $('.login-pop iframe')[0].src="/app/login/init-login.html"
-}
-    window.loginSuccessCallback = function(user) {
-      //bootstrap angular
-      console.log(user);
-      window.user = user;
-      $('.login-pop').hide();
-      angular.bootstrap(document, ['myApp']);           
+    $(document).ready(function() {
+        Parse.initialize("wGmHHvHhpgMf2PSyEVIrlYDDV7Gn04bq1ZEuG5Qd", "n2Jj001rsTaFhaTXwiVJInizNBUZdPGc4O0VehZE");
 
-    };
-    
-      })
+        angular.bootstrap(document, ['myApp']);
+
+
+
+    })
     </script>
-    
+
 
     <script src="//localhost:7777/livereload.js"></script>
 
-  </body>
+</body>
+
 </html>
-
-
-
-
