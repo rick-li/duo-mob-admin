@@ -253,6 +253,7 @@ app.constant('TPL_PATH', 'templates')
 app.constant('Parse', Parse);
 app.constant('UserEvent', 'UserEvent')
 
+
 app.config(function($routeProvider) {
     $routeProvider
         .when('/login', {
@@ -337,16 +338,25 @@ app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEven
     $scope.currentUser = Parse.User.current();
     $log.log($scope.currentUser);
 
-
-    $rootScope.$on('categoryChg', function(e, category) {
-        $log.log('category is ' + category);
+    var refreshArticles = function() {
         query.find().then(function(results) {
             $log.log('articles')
             $log.log(results);
             $scope.articles = results;
             $scope.$apply();
         })
+    };
+
+    $rootScope.$on('categoryChg', function(e, category) {
+        $log.log('category is ' + category);
+       refreshArticles(); 
     });
+
+    $scope.new = function() {
+        $log.log('new item');
+        var item = new Article();
+        $rootScope.$emit('viewDetail', item);
+    };
 
     $scope.viewDetail = function(item) {
         $log.log('view detail');
@@ -356,8 +366,6 @@ app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEven
 
 app.controller('EditCtrl', function($scope, $rootScope, $log, Parse) {
     $log.log('EditCtrl');
-
-
 
     $scope.fileChanged = function(fileRef) {
         $log.log(fileRef);
@@ -369,43 +377,36 @@ app.controller('EditCtrl', function($scope, $rootScope, $log, Parse) {
         }
         var tmpFile = new Parse.File('tmpImage', fileRef.files[0]);
         tmpFile.save().then(function() {
-            
-            $scope.currentImage = tmpFile.url();
+            $scope.currentImage = tmpFile;
+            $scope.currentImageUrl = tmpFile.url();
             $log.log('current image url '+$scope.currentImage);
             $scope.$apply();
         });
     };
 
     $scope.save = function() {
-        $log.log('save')
-        if ($scope.changedFileEl && $scope.changedFileEl.files.length > 0) {
-            var fileRef = $scope.changedFileEl.files[0]
-            $log.log(fileRef);
-            var parseFile = new Parse.File(fileRef.name, fileRef);
-            parseFile.save().then(function() {
-                $log.log('file saved ' + fileRef.name)
+        $log.log('save')        
+        // $scope.activeDetailItem.set('image', $scope.currentImage);
+        var attrs = $scope.activeDetailItem.attributes;
+        $scope.activeDetailItem.save({'title': attrs.title, 'content': attrs.content, 'intro': attrs.intro,  'image': $scope.currentImage}).then(function() {
+           $log.log('saved success');
+           //dismiss the popup.
+           $scope.isDetailShow = false;
+           $scope.$apply();
 
-                $scope.activeDetailItem.set('image', parseFile);
-                $scope.activeDetailItem.save().then(function() {
-                    $log.log('saved success with image');
-                });
-            });
-
-        } else {
-            $scope.activeDetailItem.save().then(function() {
-                $log.log('saved success without');
-            });
-        }
+        });
+        
 
     };
     $scope.closeme = function() {
-        $log.log('close')
-        $scope.activeDetailItem = null;
+        $log.log('close');
+        $scope.isDetailShow = false;
 
     };
     $rootScope.$on('viewDetail', function(e, item) {
-
+        $scope.isDetailShow = true;
         $scope.activeDetailItem = item;
-        $scope.currentImage = item.get('image').url();
+        $scope.currentImage = item.get('image');
+        $scope.currentImageUrl = $scope.currentImage.url();
     });
 });

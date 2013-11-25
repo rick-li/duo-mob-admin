@@ -1,10 +1,9 @@
-<div class="article-popout" ng-controller="EditCtrl" ng-show="activeDetailItem">
+<div class="article-popout" ng-controller="EditCtrl" ng-show="isDetailShow">
     <div class="">
         <div class="panel panel-default">
             <div class="panel-heading">
-                {{activeDetailItem.attributes.title}}adsfasfas
-
-                <a href="#" ng-click="closeme()">x</a>
+                {{activeDetailItem.attributes.title}}
+                <a href="#" ng-click="closeme();$event.preventDefault()"><i class="fa fa-times"></i></a>
             </div>
             <div class="panel-body">
                 <form class="form" ng-submit="save()">
@@ -23,7 +22,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="">图片</label>
-                                <img ng-src="{{currentImage}}">
+                                <img ng-src="{{currentImageUrl}}">
                                  <input type="file" class="duo-articlepicture" onchange="angular.element(this).scope().fileChanged(this)">
                             </div>
                             <img src="" alt="">
@@ -44,7 +43,7 @@
 
                             </div>
                             <div class="col-sm-6">
-                                <a href="#" class="btn btn-lg btn-default btn-block" ng-click="closeme()">
+                                <a href="#" class="btn btn-lg btn-default btn-block" ng-click="closeme();$event.preventDefault()">
                                     放弃
                                 </a>
 
