@@ -23,6 +23,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="">图片</label>
+                                <img ng-src="{{currentImage}}">
                                  <input type="file" class="duo-articlepicture" onchange="angular.element(this).scope().fileChanged(this)">
                             </div>
                             <img src="" alt="">
@@ -34,6 +35,7 @@
 
                             </div>
                         </div>
+                    </div>
                         <div class="row" style="margin-left:5px">
                             <div class="col-sm-6">
                                 <button class="btn btn-lg btn-default btn-block" type="submit">

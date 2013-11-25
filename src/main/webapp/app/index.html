@@ -26,7 +26,7 @@
     }
     .article-popout{
        position: absolute;
-        left:0px;
+        left:10%;
 
         width:960px;
         z-index: 50;
@@ -40,6 +40,7 @@
     .panel-heading a{
       position: absolute;
       right: 15px;
+  }
     .form-signin {
         max-width: 330px;
         padding: 15px;
@@ -111,7 +112,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" ng-controller="NavCtrl">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -125,7 +126,7 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav" ng-controller="MenuCtrl">
+                <ul class="nav navbar-nav side-nav" >
                     <li class="active"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a>
                     </li>
                     <li><a href="index.html#user"><i class="fa fa-group"></i> Users</a>
@@ -134,7 +135,7 @@
 
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right navbar-user" ng-controller="UserCtrl">
+                <ul class="nav navbar-nav navbar-right navbar-user" >
 
                     <li class="dropdown user-dropdown">
                         <a href="#" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文
@@ -174,11 +175,16 @@
                     </li>
 
                     <li class="dropdown user-dropdown">
-                        <a href="#" class="dropdown-toggle"><i class="fa fa-user"></i>{{currentUser.attributes.username}}
-              </a>
+                        <a href="#" class="dropdown-toggle"><i class="fa fa-user"></i> {{currentUser.attributes.username}}
+                         </a>
 
                     </li>
-
+                    
+                    <li class="">
+                        <a href="#" class="dropdown-toggle" ng-click="logout()">
+                        <i class="fa fa-sign-out"></i> SignOut
+                    </a>
+                    </li>
 
                 </ul>
             </div>
@@ -186,34 +192,10 @@
         </nav>
 
         <div id="page-wrapper">
-            <div ng-controller="UserCtrl">
-                <div ng-if="!currentUser">
-                    <ng-include src="'templates/login.html'"></ng-include>
 
-                </div>
-
-
+            <div ng-view>
             </div>
-
-
-
-
-
-
-
-            <div class="row">
-
-
-                <div class="col-lg-12">
-                    <div ng-controller="ContentCtrl">
-
-                        <ng-include src="'templates/content.html'"></ng-include>
-
-                    </div>
-                </div>
-            </div>
-            <!-- /.row -->
-
+            
         </div>
         <!-- /#page-wrapper -->
 
