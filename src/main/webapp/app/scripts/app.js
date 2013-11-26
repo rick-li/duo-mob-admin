@@ -61,10 +61,10 @@ app.controller('LoginCtrl', function($scope, $rootScope, $location, $log, Parse,
     }
 
 });
-app.controller('CategoryCtrl', function($scope, $rootScope, $log, Parse) {
-    $log.log('CategoryCtrl')
-    var Category = Parse.Object.extend("Category");
 
+app.controller('CategoryCtrl', function($scope, $rootScope, $log, Parse) {
+    $log.log('CategoryCtrl');
+    var Category = Parse.Object.extend("Category");
     var query = new Parse.Query(Category);
     query.descending("updatedAt");
 
@@ -72,11 +72,17 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $log, Parse) {
         $log.log('categories')
         $log.log(results);
         $scope.categories = results;
-        $scope.activeCategory = $scope.categories[0];
-        $rootScope.$emit('categoryChg', $scope.activeCategory)
-        $log.log($scope.activeCategory.id);
+        $scope.changeCate(results[0])
         $scope.$apply();
     })
+
+    $scope.changeCate = function(category) {
+        $log.log('categories')
+        $log.log($scope.categories)
+        $scope.activeCategory = category;
+        $log.log($scope.activeCategory.id);
+        $rootScope.$emit('categoryChg', $scope.activeCategory, $scope.categories)
+    }
 
 })
 
@@ -85,13 +91,21 @@ app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEven
     $log.log('ContentCtrl')
     var Article = Parse.Object.extend("Article");
 
-    var query = new Parse.Query(Article);
-    query.descending("updatedAt");
+
 
     $scope.currentUser = Parse.User.current();
     $log.log($scope.currentUser);
 
-    var refreshArticles = function() {
+    var refreshArticles = function(category) {
+        var query = new Parse.Query(Article);
+        query.descending("updatedAt");
+        if (category !== 'all') {
+            query.equalTo('category', category);
+
+        }
+        query.include('category')
+
+
         query.find().then(function(results) {
             $log.log('articles')
             $log.log(results);
@@ -100,20 +114,23 @@ app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEven
         })
     };
 
-    $rootScope.$on('categoryChg', function(e, category) {
-        $log.log('category is ' + category);
-       refreshArticles(); 
+    $rootScope.$on('categoryChg', function(e, category, categories) {
+        $scope.categories = categories;
+        $log.log('category is ');
+        $log.log(category)
+        refreshArticles(category);
     });
 
     $scope.new = function() {
         $log.log('new item');
         var item = new Article();
-        $rootScope.$emit('viewDetail', item);
+        $rootScope.$emit('viewDetail', item, $scope.categories);
     };
 
     $scope.viewDetail = function(item) {
         $log.log('view detail');
-        $rootScope.$emit('viewDetail', item);
+        $log.log($scope.categories)
+        $rootScope.$emit('viewDetail', item, $scope.categories);
     };
 });
 
@@ -124,7 +141,7 @@ app.controller('EditCtrl', function($scope, $rootScope, $log, Parse) {
         $log.log(fileRef);
         $scope.changedFileEl = fileRef;
 
-        if(fileRef.length < 0){
+        if (fileRef.length < 0) {
             $log.log('file size <0 skip.');
             return;
         }
@@ -132,23 +149,28 @@ app.controller('EditCtrl', function($scope, $rootScope, $log, Parse) {
         tmpFile.save().then(function() {
             $scope.currentImage = tmpFile;
             $scope.currentImageUrl = tmpFile.url();
-            $log.log('current image url '+$scope.currentImage);
+            $log.log('current image url ' + $scope.currentImage);
             $scope.$apply();
         });
     };
 
     $scope.save = function() {
-        $log.log('save')        
+        $log.log('save')
         // $scope.activeDetailItem.set('image', $scope.currentImage);
         var attrs = $scope.activeDetailItem.attributes;
-        $scope.activeDetailItem.save({'title': attrs.title, 'content': attrs.content, 'intro': attrs.intro,  'image': $scope.currentImage}).then(function() {
-           $log.log('saved success');
-           //dismiss the popup.
-           $scope.isDetailShow = false;
-           $scope.$apply();
+        $scope.activeDetailItem.save({
+            'title': attrs.title,
+            'content': attrs.content,
+            'intro': attrs.intro,
+            'image': $scope.currentImage
+        }).then(function() {
+            $log.log('saved success');
+            //dismiss the popup.
+            $scope.isDetailShow = false;
+            $scope.$apply();
 
         });
-        
+
 
     };
     $scope.closeme = function() {
@@ -156,10 +178,25 @@ app.controller('EditCtrl', function($scope, $rootScope, $log, Parse) {
         $scope.isDetailShow = false;
 
     };
-    $rootScope.$on('viewDetail', function(e, item) {
+    $rootScope.$on('viewDetail', function(e, item, categories) {
+        $log.log('view detail');
+        $log.log(categories)
         $scope.isDetailShow = true;
         $scope.activeDetailItem = item;
+
+        var category = item.get('category');
+        if (category != null) {
+            //to make active category identical to the selected category
+            $scope.activeCategory = _.findWhere(categories, {
+                'id': category.id
+            });
+            $log.log('active cateogry ')
+            $log.log($scope.activeCategory);
+        }
+        $scope.categories = categories;
         $scope.currentImage = item.get('image');
-        $scope.currentImageUrl = $scope.currentImage.url();
+        if ($scope.currentImage) {
+            $scope.currentImageUrl = $scope.currentImage.url();
+        }
     });
 });
