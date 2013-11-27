@@ -1,4 +1,4 @@
-app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEvent, Status, MaskService) {
+app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, Status, MaskService, ArticleEvent) {
     $log.log('ContentCtrl');
     var Article = Parse.Object.extend("Article");
 
@@ -27,7 +27,12 @@ app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEven
     $rootScope.$on('categoryChg', function(e, category, categories) {
         $scope.categories = categories;
         $log.log('category is ', category);
+        $scope.selectedCategory = category;
         refreshArticles(category);
+    });
+
+    $rootScope.$on(ArticleEvent, function() {
+        refreshArticles($scope.selectedCategory);
     });
 
     $scope.new = function() {
@@ -37,8 +42,17 @@ app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEven
     };
 
     $scope.viewDetail = function(item) {
-        $log.log('view detail');
-        $log.log($scope.categories);
+        $log.log('view detail', $scope.categories);
         $rootScope.$emit('viewDetail', item, $scope.categories);
+    };
+
+    $scope.delete = function(item) {
+        $log.log('Delete ', item.get('title'));
+        item.set('status', Status.deleted);
+        item.save({
+            'status': Status.deleted
+        }).then(function() {
+            refreshArticles($scope.selectedCategory);
+        });
     };
 });

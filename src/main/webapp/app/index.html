@@ -19,9 +19,11 @@
     <link rel="stylesheet" href="assets/app.css">
 </head>
 
-<body ng-controller="BodyCtrl" ng-class="{'duo-mask':loadingMask == true}">
-    <div ng-class="{'duo-spinner-wrapper':loadingMask == true}">
-        <div class="duo-spinner"></div>
+<body ng-controller="BodyCtrl">
+    <div ng-class="{'duo-mask':loadingMask == true}">
+        <div ng-class="{'duo-spinner-wrapper':loadingMask == true}" class="duo-hidden">
+            <div class="duo-spinner"></div>
+        </div>
     </div>
     <div id="wrapper">
 
@@ -121,7 +123,7 @@
     <script src="../lib/tablesorter/jquery.tablesorter.js"></script>
     <script src="../lib/tablesorter/tables.js"></script>
     <script src="../lib/parse-1.2.13.min.js"></script>
-    <script src="../lib/holder.js"></script>
+
     <script src="./assets/app.js"></script>
     <script>
     $(document).ready(function() {

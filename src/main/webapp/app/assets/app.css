@@ -1,4 +1,10 @@
 
+.duo-hidden {
+
+    display: none;
+
+}
+
 .duo-mask {
 
     position:absolute;
@@ -72,6 +78,8 @@
 .article-popout .panel-heading {
 
     position: relative;
+
+    min-height: 40px;
 
 }
 

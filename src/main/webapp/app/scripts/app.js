@@ -6,6 +6,8 @@ app.constant('TPL_PATH', 'templates')
 app.constant('Parse', Parse);
 app.constant('UserEvent', 'UserEvent');
 app.constant('MaskEvent', 'MaskEvent');
+app.constant('ArticleEvent', 'ArticleEvent');
+
 app.constant('Status', {
     'deleted': 'deleted',
     'new': 'new',
@@ -51,6 +53,24 @@ app.service('MaskService', ['$rootScope', 'MaskEvent', '$log',
             },
             'stop': function() {
                 $rootScope.$emit(MaskEvent, 'stop');
+            }
+        }
+    }
+]);
+
+app.directive('ngConfirmClick', [
+    function() {
+        return {
+            priority: -1,
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                element.bind('click', function(e) {
+                    var message = attrs.ngConfirmClick;
+                    if (message && !confirm(message)) {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                    }
+                });
             }
         }
     }

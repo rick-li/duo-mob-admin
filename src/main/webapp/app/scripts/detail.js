@@ -1,4 +1,4 @@
-app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status) {
+app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status, ArticleEvent) {
     $log.log('EditCtrl');
     var defaultImageUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     $scope.currentImageUrl = defaultImageUrl;
@@ -35,8 +35,8 @@ app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status) {
             $log.log('saved success');
             //dismiss the popup.
             $scope.isDetailShow = false;
+            $rootScope.$emit(ArticleEvent);
             $scope.$apply();
-
         });
 
 
@@ -52,13 +52,12 @@ app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status) {
         $scope.activeDetailItem = item;
 
         var category = item.get('category');
-        if (category !== null) {
+        if (category) {
             //to make active category identical to the selected category
             $scope.activeCategory = _.findWhere(categories, {
                 'id': category.id
             });
-            $log.log('active cateogry ');
-            $log.log($scope.activeCategory);
+            $log.log('active cateogry ', $scope.activeCategory);
         }
         $scope.categories = categories;
         $scope.currentImage = item.get('image');

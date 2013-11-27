@@ -230,6 +230,8 @@ app.constant('TPL_PATH', 'templates')
 app.constant('Parse', Parse);
 app.constant('UserEvent', 'UserEvent');
 app.constant('MaskEvent', 'MaskEvent');
+app.constant('ArticleEvent', 'ArticleEvent');
+
 app.constant('Status', {
     'deleted': 'deleted',
     'new': 'new',
@@ -280,6 +282,24 @@ app.service('MaskService', ['$rootScope', 'MaskEvent', '$log',
     }
 ]);
 
+app.directive('ngConfirmClick', [
+    function() {
+        return {
+            priority: -1,
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                element.bind('click', function(e) {
+                    var message = attrs.ngConfirmClick;
+                    if (message && !confirm(message)) {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                    }
+                });
+            }
+        }
+    }
+]);
+
 app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, UserEvent) {
     $log.log('nav ctrl')
     $scope.currentUser = Parse.User.current();
@@ -316,7 +336,7 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
         $rootScope.$emit('categoryChg', $scope.activeCategory, $scope.categories)
     }
 
-});;app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, UserEvent, Status, MaskService) {
+});;app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, Status, MaskService, ArticleEvent) {
     $log.log('ContentCtrl');
     var Article = Parse.Object.extend("Article");
 
@@ -345,7 +365,12 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
     $rootScope.$on('categoryChg', function(e, category, categories) {
         $scope.categories = categories;
         $log.log('category is ', category);
+        $scope.selectedCategory = category;
         refreshArticles(category);
+    });
+
+    $rootScope.$on(ArticleEvent, function() {
+        refreshArticles($scope.selectedCategory);
     });
 
     $scope.new = function() {
@@ -355,11 +380,20 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
     };
 
     $scope.viewDetail = function(item) {
-        $log.log('view detail');
-        $log.log($scope.categories);
+        $log.log('view detail', $scope.categories);
         $rootScope.$emit('viewDetail', item, $scope.categories);
     };
-});;app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status) {
+
+    $scope.delete = function(item) {
+        $log.log('Delete ', item.get('title'));
+        item.set('status', Status.deleted);
+        item.save({
+            'status': Status.deleted
+        }).then(function() {
+            refreshArticles($scope.selectedCategory);
+        });
+    };
+});;app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status, ArticleEvent) {
     $log.log('EditCtrl');
     var defaultImageUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     $scope.currentImageUrl = defaultImageUrl;
@@ -396,8 +430,8 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
             $log.log('saved success');
             //dismiss the popup.
             $scope.isDetailShow = false;
+            $rootScope.$emit(ArticleEvent);
             $scope.$apply();
-
         });
 
 
@@ -413,13 +447,12 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
         $scope.activeDetailItem = item;
 
         var category = item.get('category');
-        if (category !== null) {
+        if (category) {
             //to make active category identical to the selected category
             $scope.activeCategory = _.findWhere(categories, {
                 'id': category.id
             });
-            $log.log('active cateogry ');
-            $log.log($scope.activeCategory);
+            $log.log('active cateogry ', $scope.activeCategory);
         }
         $scope.categories = categories;
         $scope.currentImage = item.get('image');
