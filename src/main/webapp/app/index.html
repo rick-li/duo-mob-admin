@@ -16,99 +16,13 @@
     <link href="styles/sb-admin.css" rel="stylesheet">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
 
-
-    <style type="text/css">
-    .login-popout {
-        position: absolute;
-        left:30%;
-        width:600px;
-        z-index: 50;
-    }
-    .article-popout{
-       position: absolute;
-        left:10%;
-
-        width:960px;
-        z-index: 50;
-    }
-    .article-popout .panel-heading{
-      position: relative;
-    }
-    .duo-header-nav{
-      margin-left: 10px;
-    }
-    .panel-heading a{
-      position: absolute;
-      right: 15px;
-  }
-    .form-signin {
-        max-width: 330px;
-        padding: 15px;
-        margin: 0 auto;
-    }
-    .form-signin .form-signin-heading, .form-signin .checkbox {
-        margin-bottom: 10px;
-    }
-    .form-signin .checkbox {
-        font-weight: normal;
-    }
-    .form-signin .form-control {
-        position: relative;
-        font-size: 16px;
-        height: auto;
-        padding: 10px;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-    }
-    .form-signin .form-control:focus {
-        z-index: 2;
-    }
-    .form-signin input[type="text"] {
-        margin-bottom: -1px;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-    }
-    .form-signin input[type="password"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-    }
-    .account-wall {
-        margin-top: 20px;
-        padding: 40px 0px 20px 0px;
-        background-color: #f7f7f7;
-        -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-        -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    }
-    .login-title {
-        color: #555;
-        font-size: 18px;
-        font-weight: 400;
-        display: block;
-    }
-    .profile-img {
-        width: 96px;
-        height: 96px;
-        margin: 0 auto 10px;
-        display: block;
-        -moz-border-radius: 50%;
-        -webkit-border-radius: 50%;
-        border-radius: 50%;
-    }
-    .need-help {
-        margin-top: 10px;
-    }
-    .new-account {
-        display: block;
-        margin-top: 10px;
-    }
-    </style>
+    <link rel="stylesheet" href="assets/app.css">
 </head>
 
-<body>
-    
+<body ng-controller="BodyCtrl" ng-class="{'duo-mask':loadingMask == true}">
+    <div ng-class="{'duo-spinner-wrapper':loadingMask == true}">
+        <div class="duo-spinner"></div>
+    </div>
     <div id="wrapper">
 
         <!-- Sidebar -->
@@ -126,7 +40,7 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav" >
+                <ul class="nav navbar-nav side-nav">
                     <li class="active"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a>
                     </li>
                     <li><a href="index.html#user"><i class="fa fa-group"></i> Users</a>
@@ -135,13 +49,10 @@
 
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right navbar-user" >
+                <ul class="nav navbar-nav navbar-right navbar-user">
 
                     <li class="dropdown user-dropdown">
-                        <a href="#" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文
-                <b class="caret"></b>
-
-              </a>
+                        <a href="#" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#"> English</a>
                             </li>
@@ -179,11 +90,11 @@
                          </a>
 
                     </li>
-                    
+
                     <li class="">
                         <a href="#" class="dropdown-toggle" ng-click="logout()">
-                        <i class="fa fa-sign-out"></i> SignOut
-                    </a>
+                            <i class="fa fa-sign-out"></i> SignOut
+                        </a>
                     </li>
 
                 </ul>
@@ -192,10 +103,9 @@
         </nav>
 
         <div id="page-wrapper">
-
             <div ng-view>
             </div>
-            
+
         </div>
         <!-- /#page-wrapper -->
 
@@ -211,6 +121,7 @@
     <script src="../lib/tablesorter/jquery.tablesorter.js"></script>
     <script src="../lib/tablesorter/tables.js"></script>
     <script src="../lib/parse-1.2.13.min.js"></script>
+    <script src="../lib/holder.js"></script>
     <script src="./assets/app.js"></script>
     <script>
     $(document).ready(function() {
