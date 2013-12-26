@@ -1,7 +1,8 @@
 app.controller('LoginCtrl', function($scope, $rootScope, $location, $log, Parse, UserEvent) {
     $scope.currentUser = Parse.User.current();
+    $log.log('currentUser, ', $scope.currentUser)
     if ($scope.currentUser) {
-        $location.path('/content');
+        $location.path('/content/all');
     }
     $scope.login = function() {
         $log.log('name: ' + $scope.username + " password: " + $scope.password);

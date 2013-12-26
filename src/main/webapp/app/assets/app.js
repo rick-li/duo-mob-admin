@@ -231,6 +231,7 @@ app.constant('Parse', Parse);
 app.constant('UserEvent', 'UserEvent');
 app.constant('MaskEvent', 'MaskEvent');
 app.constant('ArticleEvent', 'ArticleEvent');
+app.constant('AlertEvent', 'AlertEvent');
 
 app.constant('Status', {
     'deleted': 'deleted',
@@ -246,18 +247,88 @@ app.config(function($routeProvider) {
             templateUrl: 'templates/login.html',
             controller: 'LoginCtrl'
         })
-        .when('/content', {
+        .when('/content/:categoryId', {
             templateUrl: 'templates/content.html',
             controller: 'ContentCtrl'
+        })
+        .when('/categories', {
+            templateUrl: 'templates/category.html',
+            controller: 'CategoryCtrl'
+        })
+        .when('/detail/:id', {
+            templateUrl: 'templates/detail.html',
+            controller: 'EditCtrl'
         })
         .otherwise({
             redirectTo: '/login'
         });
 });
 
-app.controller('BodyCtrl', function($scope, $rootScope, MaskEvent, $log) {
+app.directive('ckeditor', function($log) {
+    return {
+        restrict: 'E',
+        // require: '?ngModel',
+        scope: {
+            content: '='
+        },
+        link: function(scope, elm, attr) {
+            $log.log('attr is ', attr);
+            $log.log('=======ckeditor link', scope.content);
+            var ck = CKEDITOR.replace(elm[0], {
+                height: '500px'
+            });
+            scope.$watch('content', function(newContent) {
+                $log.log('content changed, ', newContent);
+                if (newContent) {
+                    ck.setData(newContent);
+                }
+            })
+
+
+            ck.on('instanceReady', function() {
+                ck.setData(scope.content);
+            });
+
+            function updateModel() {
+                scope.$apply(function() {
+                    scope.content = ck.getData();
+                });
+            }
+
+            ck.on('change', updateModel);
+            ck.on('key', updateModel);
+            ck.on('dataReady', updateModel);
+
+        }
+    };
+});
+
+app.service('AlertService', function($rootScope, AlertEvent) {
+    return {
+        alert: function(message) {
+            $rootScope.$emit(AlertEvent, message);
+        }
+    }
+});
+
+app.controller('BodyCtrl', function($scope, $rootScope, MaskEvent, AlertEvent, $log, $location) {
     $log.log('BodyCtrl')
     $scope.loadingMask = false;
+    $scope.alertDismissed = true;
+    $scope.alertMsg = '';
+
+    $scope.isMenuSelected = function(menu) {
+        var currentPath = $location.path();
+        $log.log('current path is ', currentPath);
+        return currentPath.indexOf(menu) != -1;
+    };
+
+    $rootScope.$on(AlertEvent, function(e, message) {
+        $scope.alertDismissed = false;
+        $scope.alertMsg = message;
+        $scope.$apply();
+    });
+
     $rootScope.$on(MaskEvent, function(e, type) {
         $log.log('mask event', type)
         if (type === 'start') {
@@ -272,7 +343,6 @@ app.service('MaskService', ['$rootScope', 'MaskEvent', '$log',
     function($rootScope, MaskEvent, $log) {
         return {
             'start': function() {
-                $log.log('mask service start')
                 $rootScope.$emit(MaskEvent, 'start');
             },
             'stop': function() {
@@ -313,61 +383,158 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
         $scope.currentUser = null;
         $location.path('/login')
     };
-});;app.controller('CategoryCtrl', function($scope, $rootScope, $log, Parse, MaskService) {
-    $log.log('CategoryCtrl');
+});;app.service('CategoryService', function(Parse, Status, MaskService, $log) {
     var Category = Parse.Object.extend("Category");
-    var query = new Parse.Query(Category);
-    query.descending("updatedAt");
-    MaskService.start();
-    query.find().then(function(results) {
-        $log.log('categories')
-        $log.log(results);
-        $scope.categories = results;
-        $scope.changeCate(results[0])
-        $scope.$apply();
-        MaskService.stop()
-    })
+    var cateQuery = new Parse.Query(Category);
+    cateQuery.notEqualTo('status', Status.deleted);
+    cateQuery.include('lang');
+    cateQuery.descending("updatedAt");
+    var cachedResult = null;
 
-    $scope.changeCate = function(category) {
-        $log.log('categories')
-        $log.log($scope.categories)
-        $scope.activeCategory = category;
-        $log.log($scope.activeCategory.id);
-        $rootScope.$emit('categoryChg', $scope.activeCategory, $scope.categories)
+    return function(callback, useCache) {
+        if (useCache && cachedResult) {
+            callback(cachedResult);
+        } else {
+            MaskService.start();
+            cateQuery.find().then(function(results) {
+                $log.log('categories ', results)
+                MaskService.stop()
+                callback(results);
+            });
+        };
+    };
+
+});
+app.controller('CategoryCtrl', function($scope, $rootScope, $log, Parse, Status, MaskService, CategoryService) {
+    $log.log('CategoryCtrl')
+    var Lang = Parse.Object.extend("Lang");
+    var langQuery = new Parse.Query(Lang);
+    langQuery.find().then(function(results) {
+        $log.log('langs', results);
+        $scope.langs = results;
+    });
+
+
+    $scope.query = function() {
+        CategoryService(function(categories) {
+            $scope.categories = categories;
+            $scope.$apply();
+        })
+
+    };
+    $scope.query();
+
+    $scope.submit = function(item) {
+        $log.log('save category');
+        // $scope.activeDetailItem.set('image', $scope.currentImage);
+        var attrs = $scope.selectedItem.attributes;
+        $scope.selectedItem.save({
+            'name': attrs.name,
+            'lang': $scope.selectedLang,
+            'status': Status.new,
+        }).then(function() {
+            $log.log('saved success');
+            $scope.query();
+            $scope.$apply();
+        });
+    };
+});;app.service('PushService', function(Parse, AlertService) {
+    return {
+        push: function(item) {
+            Parse.Push.send({
+                channels: ["zh-tw"],
+                data: {
+                    alert: item.get('intro')
+
+                }
+            }, {
+                success: function() {
+                    AlertService.alert('推送' + item.get('title') + '成功');
+                },
+                error: function(error) {
+                    alert('push failed');
+                }
+            });
+
+
+        }
+
     }
+});
 
-});;app.controller('ContentCtrl', function($scope, $rootScope, $log, Parse, Status, MaskService, ArticleEvent) {
-    $log.log('ContentCtrl');
+app.service('ArticleService', function(Parse, Status, MaskService, $log) {
+    var Article = Parse.Object.extend("Article");
+
+    return {
+        queryByCategory: function(category, callback) {
+            var query = new Parse.Query(Article);
+            query.ascending("order");
+            if (category !== 'all') {
+                query.equalTo('category', category);
+            }
+
+            query.notEqualTo('status', Status.deleted);
+            query.include('category');
+
+            MaskService.start();
+            query.find().then(function(results) {
+                MaskService.stop();
+                $log.log('articles', results);
+                callback(results);
+            });
+        },
+        queryById: function(id, callback) {
+            var query = new Parse.Query(Article);
+            query.notEqualTo('status', Status.deleted);
+            MaskService.start();
+            query.get(id).then(function(results) {
+                MaskService.stop();
+                $log.log('articles', results);
+                callback(results);
+            });
+        }
+    }
+});
+
+app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Parse, Status, CategoryService, ArticleService, MaskService, ArticleEvent, PushService) {
+    $scope.activeCategoryId = $routeParams.categoryId;
+    $scope.activeCategory = {};
+    $log.log('ContentCtrl, ', $scope.activeCategory);
+
     var Article = Parse.Object.extend("Article");
 
     $scope.currentUser = Parse.User.current();
     $log.log($scope.currentUser);
 
-    var refreshArticles = function(category) {
-        var query = new Parse.Query(Article);
-        query.descending("order");
-        if (category !== 'all') {
-            query.equalTo('category', category);
+
+
+    CategoryService(function(results) {
+        $scope.categories = results;
+
+        if ($scope.activeCategoryId == 'all') {
+            $scope.activeCategory = results[0];
+            $scope.changeCate($scope.activeCategory);
+        } else {
+            $scope.activeCategory = _.findWhere(results, {
+                id: $scope.activeCategoryId
+            })
+            refreshArticles($scope.activeCategory);
         }
 
-        query.notEqualTo('status', Status.deleted);
-        query.include('category');
-        MaskService.start();
-        query.find().then(function(results) {
-            MaskService.stop();
-            $log.log('articles');
-            $log.log(results);
+        $scope.$apply();
+    })
+
+    $scope.changeCate = function(category) {
+        $location.path('/content/' + category.id);
+    }
+
+    var refreshArticles = function(category) {
+        ArticleService.queryByCategory(category, function(results) {
+            $log.log('category ', category.id, ' : ', results)
             $scope.articles = results;
             $scope.$apply();
         });
     };
-
-    $rootScope.$on('categoryChg', function(e, category, categories) {
-        $scope.categories = categories;
-        $log.log('category is ', category);
-        $scope.selectedCategory = category;
-        refreshArticles(category);
-    });
 
     $rootScope.$on(ArticleEvent, function() {
         refreshArticles($scope.selectedCategory);
@@ -380,8 +547,8 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
     };
 
     $scope.viewDetail = function(item) {
-        $log.log('view detail', $scope.categories);
-        $rootScope.$emit('viewDetail', item, $scope.categories);
+        $location.path("detail/" + item.id);
+
     };
 
     $scope.delete = function(item) {
@@ -393,10 +560,50 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
             refreshArticles($scope.selectedCategory);
         });
     };
-});;app.controller('EditCtrl', function($scope, $rootScope, $log, Parse, Status, ArticleEvent) {
-    $log.log('EditCtrl');
+
+    $scope.push = function(item) {
+        $log.log('Push ', item.get('title'));
+        PushService.push(item);
+    };
+});;app.controller('EditCtrl', function($scope, $rootScope, $routeParams, $log, CategoryService, ArticleService, Parse, Status, ArticleEvent) {
+    $scope.aaaa = 1111;
+    $scope.activeDetailItem = {};
+    //TODO set a better default image.
     var defaultImageUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     $scope.currentImageUrl = defaultImageUrl;
+
+
+    var articleId = $routeParams.id;
+
+    $log.log('view detail, ', articleId);
+
+    CategoryService(function(categories) {
+        $scope.categories = categories;
+        $log.log(categories);
+        $scope.$apply();
+
+        //TODO, there're good chance to use promise here.
+        ArticleService.queryById(articleId, function(item) {
+            $scope.activeDetailItem = item;
+            $scope.aaaa = 2222;
+            var category = item.get('category');
+            if (category) {
+                //to make active category identical to the selected category
+                $scope.activeCategory = _.findWhere(categories, {
+                    'id': category.id
+                });
+                $log.log('active cateogry ', $scope.activeCategory);
+            }
+            $scope.currentImage = item.get('image');
+            if ($scope.currentImage) {
+                $scope.currentImageUrl = $scope.currentImage.url();
+            }
+
+            $scope.$apply();
+        });
+
+    }, true);
+
     $scope.fileChanged = function(fileRef) {
         $log.log(fileRef);
         $scope.changedFileEl = fileRef;
@@ -433,37 +640,17 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
             $rootScope.$emit(ArticleEvent);
             $scope.$apply();
         });
-
-
     };
+
     $scope.closeme = function() {
         $log.log('close');
-        $scope.isDetailShow = false;
     };
-    $rootScope.$on('viewDetail', function(e, item, categories) {
-        $log.log('view detail');
-        $log.log(categories);
-        $scope.isDetailShow = true;
-        $scope.activeDetailItem = item;
 
-        var category = item.get('category');
-        if (category) {
-            //to make active category identical to the selected category
-            $scope.activeCategory = _.findWhere(categories, {
-                'id': category.id
-            });
-            $log.log('active cateogry ', $scope.activeCategory);
-        }
-        $scope.categories = categories;
-        $scope.currentImage = item.get('image');
-        if ($scope.currentImage) {
-            $scope.currentImageUrl = $scope.currentImage.url();
-        }
-    });
 });;app.controller('LoginCtrl', function($scope, $rootScope, $location, $log, Parse, UserEvent) {
     $scope.currentUser = Parse.User.current();
+    $log.log('currentUser, ', $scope.currentUser)
     if ($scope.currentUser) {
-        $location.path('/content');
+        $location.path('/content/all');
     }
     $scope.login = function() {
         $log.log('name: ' + $scope.username + " password: " + $scope.password);

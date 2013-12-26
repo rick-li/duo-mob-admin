@@ -1,4 +1,4 @@
-<div class="article-popout" ng-controller="EditCtrl" ng-show="isDetailShow">
+<div class="row">
     <div class="">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -38,25 +38,19 @@
                         <div class="col-sm-7">
                             <div class="form-group">
                                 <label for="">文章内容</label>
-                                <textarea class="form-control" rows="32" ng-model="activeDetailItem.attributes.content" required/>
+                                <ckeditor content="activeDetailItem.attributes.content"></ckeditor>
+                                <!-- <textarea id="contentEditor" class="form-control" rows="32" ng-model="activeDetailItem.attributes.content" required/> -->
 
                             </div>
                         </div>
                     </div>
                     <div class="row" style="margin-left:5px">
-                        <div class="col-sm-6">
+                        <div class="col-sm-12">
                             <button class="btn btn-lg btn-default btn-block" type="submit">
                                 保存
                             </button>
 
                         </div>
-                        <div class="col-sm-6">
-                            <a href="#" class="btn btn-lg btn-default btn-block" ng-click="closeme();$event.preventDefault()">
-                                    放弃
-                                </a>
-
-                        </div>
-
 
                     </div>
             </div>

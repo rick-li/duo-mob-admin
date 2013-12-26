@@ -38,14 +38,15 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="index.html">Mobile Admin</a>
+
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
-                    <li class="active"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a>
+                    <li ng-class="{active:isMenuSelected('content')}"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a>
                     </li>
-                    <li><a href="index.html#user"><i class="fa fa-group"></i> Users</a>
+                    <li ng-class="{active:isMenuSelected('categories')}"><a href="index.html#categories"><i class="fa fa-group"></i> Categories</a>
                     </li>
 
 
@@ -54,7 +55,7 @@
                 <ul class="nav navbar-nav navbar-right navbar-user">
 
                     <li class="dropdown user-dropdown">
-                        <a href="#" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文<b class="caret"></b></a>
+                        <a href="" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#"> English</a>
                             </li>
@@ -104,7 +105,12 @@
             <!-- /.navbar-collapse -->
         </nav>
 
+
         <div id="page-wrapper">
+            <div class="alert alert-success alert-dismissable" ng-class="{'duo-hidden':alertDismissed == true}">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true" ng-click="alertDismissed = true;">×</button>
+                {{alertMsg}}
+            </div>
             <div ng-view>
             </div>
 
@@ -119,6 +125,9 @@
     <script src="../../lib/bootstrap.js"></script>
     <!-- Page Specific Plugins -->
 
+    <!-- CK editor -->
+    <script type="text/javascript" src="../lib/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="../lib/ckeditor/adapters/jquery.js"></script>
 
     <script src="../lib/tablesorter/jquery.tablesorter.js"></script>
     <script src="../lib/tablesorter/tables.js"></script>
@@ -132,7 +141,13 @@
         angular.bootstrap(document, ['myApp']);
 
 
-
+        //bootstrap
+        $('.dropdown-toggle').dropdown();
+        $('body').on('click', function() {
+            $('.dropdown-menu').css({
+                'display': 'none'
+            });
+        })
     })
     </script>
 
