@@ -1,0 +1,32 @@
+<div class="modal-dialog ">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="bootstrap-dialog-header">
+                <div class="bootstrap-dialog-title">
+                    請選擇圖片：
+                </div>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="bootstrap-dialog-message">
+                <ul class="duo-images-cnt">
+                    <!-- must use parent here because each li create a separate scope -->
+                    <li ng-repeat="item in items" ng-click="select(item)" ng-class="{selected:selectedItem.id==item.id}">
+                        <image ng-src="{{item.attributes.image.url()}}" width=150 height=100></image>
+                        <div>{{ item.attributes.name }}</div>
+                    </li>
+                </ul>
+                <div>Selected: {{selectedItem.attributes.name}}</div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <div class="bootstrap-dialog-footer">
+                <div class="bootstrap-dialog-footer-buttons">
+                    <button class="btn btn-primary" ng-click="ok()">OK</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

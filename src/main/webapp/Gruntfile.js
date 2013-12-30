@@ -98,12 +98,17 @@ module.exports = function(grunt) {
                     'lib/angular/angular.min.js',
                     'lib/angular/angular-route.min.js',
                     'lib/underscore-min.js',
+                    'bower_components/angular-bootstrap/ui-bootstrap.js',
+                    'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+
 
                     'app/scripts/app.js',
                     'app/scripts/category.js',
                     'app/scripts/content.js',
+                    'app/scripts/images.js',
                     'app/scripts/detail.js',
                     'app/scripts/login.js',
+
                     //place your JavaScript files here
                 ]
             },

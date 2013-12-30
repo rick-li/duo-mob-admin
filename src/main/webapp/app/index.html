@@ -15,7 +15,7 @@
     <!-- Add custom CSS here -->
     <link href="styles/sb-admin.css" rel="stylesheet">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
-
+    <!-- <link rel="stylesheet" href="../bower_components/magnific-popup/dist/magnific-popup.css"> -->
     <link rel="stylesheet" href="assets/app.css">
 </head>
 
@@ -42,11 +42,13 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <div class="collapse navbar-collapse navbar-ex1-collapse" ng-controller="MenuCtrl">
                 <ul class="nav navbar-nav side-nav">
-                    <li ng-class="{active:isMenuSelected('content')}"><a href="index.html#content"><i class="fa fa-table"></i> Articles</a>
+                    <li ng-class="{active:isMenuSelected('content')}"><a href="" ng-click="clickArticles()"><i class="fa fa-table"></i> Articles</a>
                     </li>
-                    <li ng-class="{active:isMenuSelected('categories')}"><a href="index.html#categories"><i class="fa fa-group"></i> Categories</a>
+                    <li ng-class="{active:isMenuSelected('categories')}"><a href="" ng-click="clickCategories()"><i class="fa fa-tags"></i> Categories</a>
+                    </li>
+                    <li ng-class="{active:isMenuSelected('images')}"><a href="index.html#images"><i class="fa fa-picture-o"></i> Images</a>
                     </li>
 
 
@@ -55,15 +57,12 @@
                 <ul class="nav navbar-nav navbar-right navbar-user">
 
                     <li class="dropdown user-dropdown">
-                        <a href="" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> 中文<b class="caret"></b></a>
+
+                        <a href="" class="dropdown-toggle"><i class="fa fa-globe" data-toggle="dropdown"></i> {{selectedLang.attributes.name}}<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#"> English</a>
-                            </li>
-                            <li><a href="#"> German</a>
-                            </li>
 
-                            <li class="divider"></li>
-
+                            <li ng-repeat="item in langs" ng-click="selectLang(item)"><a href="">{{item.attributes.name}}</a>
+                            </li>
                         </ul>
                     </li>
 
@@ -133,6 +132,7 @@
     <script src="../lib/tablesorter/tables.js"></script>
     <script src="../lib/parse-1.2.13.min.js"></script>
 
+
     <script src="./assets/app.js"></script>
     <script>
     $(document).ready(function() {
@@ -144,9 +144,7 @@
         //bootstrap
         $('.dropdown-toggle').dropdown();
         $('body').on('click', function() {
-            $('.dropdown-menu').css({
-                'display': 'none'
-            });
+            $('.open').removeClass('open')
         })
     })
     </script>

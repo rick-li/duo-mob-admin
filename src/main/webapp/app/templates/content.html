@@ -11,52 +11,71 @@
                         </ul>
                         <ul class="nav navbar-nav navbar-left">
                             <li>
-                                <a href="#" ng-click="new();$event.preventDefault();"><i class="fa fa-plus"></i> 新增</a>
+                                <a href="" ng-click="new();"><i class="fa fa-plus"></i> 新增</a>
                             </li>
                         </ul>
                     </div>
                 </div>
+                <div class="row">
 
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover table-striped tablesorter">
-                            <thead>
-                                <tr>
-                                    <th>Order <i class="fa fa-sort"></i>
-                                    </th>
-                                    <th>Category <i class="fa fa-sort"></i>
-                                    </th>
-                                    <th>Title <i class="fa fa-sort"></i>
-                                    </th>
-                                    <th>Intro<i class="fa fa-sort"></i>
-                                    </th>
-                                    <th>Status<i class="fa fa-sort"></i>
-                                    </th>
-                                    <th>Date <i class="fa fa-sort"></i>
-                                    </th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in articles | filter:item.status!='deleted'">
-                                    <td>{{item.attributes.order}}</td>
-                                    <td>{{item.get('category').get('name')}}</td>
-                                    <td>{{item.attributes.title}}</td>
-                                    <td>{{item.attributes.intro}}</td>
-                                    <td>{{item.attributes.status}}</td>
-                                    <td>{{item.updatedAt}}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-default" ng-click="viewDetail(item)"><i class="fa fa-pencil"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-click="delete(item)" ng-confirm-click="是否要删除{{item.attributes.title}}？"><i class="fa fa-times"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" ng-click="push(item)" ng-confirm-click="是否要推送{{item.attributes.title}}？"><i class="fa fa-fighter-jet"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                    <div class="col-lg-12">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-striped tablesorter">
+                                    <thead>
+                                        <tr>
+                                            <th>Order <i class="fa fa-sort"></i>
+                                            </th>
+                                            <th>Category <i class="fa fa-sort"></i>
+                                            </th>
+                                            <th>Title <i class="fa fa-sort"></i>
+                                            </th>
+                                            <th>Intro<i class="fa fa-sort"></i>
+                                            </th>
+                                            <th>Status<i class="fa fa-sort"></i>
+                                            </th>
+                                            <th>Date <i class="fa fa-sort"></i>
+                                            </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- | filter:item.status!='deleted' -->
+                                        <tr ng-repeat="item in articles | orderBy:item.attributes.order" ng-class="{success:$parent.selectedItem == item}">
+                                            <td>
+                                                <div style="float:left">{{item.attributes.order}}</div>
+                                                <div style="float:right">
+                                                    <div class="duo-order-item">
+                                                        <button type="button" class="btn btn-default" ng-click="moveup(item)"><i class="fa fa-sort-up"></i> 
+                                                        </button>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-default" ng-click="movedown(item)">
+                                                            <i class=" fa fa-sort-down ">
+                                                            </i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{item.attributes.title}}</td>
+                                            <td>{{item.attributes.intro}}</td>
+                                            <td>{{item.get('category').get('name')}}</td>
+                                            <td>{{item.attributes.status}}</td>
+                                            <td>{{item.updatedAt}}</td>
+                                            <td>
+                                                <button type="button " class="btn btn-default " ng-click="edit(item) "><i class="fa fa-pencil "></i>
+                                                </button>
+                                                <button type="button " class="btn btn-default " ng-click="delete(item) " ng-confirm-click="是否要删除{{item.attributes.title}}？ "><i class="fa fa-times "></i>
+                                                </button>
+                                                <button type="button " class="btn btn-default " ng-click="push(item) " ng-confirm-click="是否要推送{{item.attributes.title}}？ "><i class="fa fa-fighter-jet "></i>
+                                                </button>
+                                            </td>
+                                        </tr>
 
-                            </tbody>
-                        </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

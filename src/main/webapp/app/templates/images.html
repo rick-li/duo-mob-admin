@@ -1,0 +1,12 @@
+Upload:
+<input type="file" class="duo-articlepicture" multiple onchange="angular.element(this).scope().fileChanged(this)">
+<button type="button " class="btn btn-default " ng-click="upload()">
+    {{uploadBtnLabel}}
+</button>
+<ul class="duo-images-cnt">
+    <li ng-repeat="item in images">
+        <a href="" ng-click="remove(item)" ng-confirm-click="是否要删除{{item.attributes.title}}?">x</a>
+        <image ng-src="{{item.attributes.image.url()}}" width="150" height="100"></image>
+        <div>{{item.attributes.name}}</div>
+    </li>
+</ul>

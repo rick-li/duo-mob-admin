@@ -63,14 +63,7 @@
                     <label for="categoryName">Category</label>
                     <input type="text" class="form-control" id="questionsetName" placeholder="" ng-model="selectedItem.attributes.name" required>
                 </div>
-                <div class="form-group">
-                    <label for="langDesc">Language</label>
-                    <!--<select ng-model="selectedLang." ng-options="lang.attributes.name for lang in langs">-->
-                    <select>
-                        <option value="lang.attributes.code" ng-repeat="lang in langs" ng-selected="lang.id==selectedLang.id">{{lang.attributes.name}}</option>
-                    </select>
 
-                </div>
                 <div class="form-group">
 
                     <div class="col-sm-6">
