@@ -73,12 +73,13 @@ app.controller('EditCtrl', function($scope, $rootScope, $routeParams, $location,
             'lang': LangService.currentLang()
         }).then(function() {
             $log.log('saved success');
+            AlertService.alert('保存完毕.');
             $scope.saveBtnText = "保存";
 
             //dismiss the popup.
 
             $scope.$apply();
-            AlertService.alert('保存完毕.');
+
         });
     };
 
