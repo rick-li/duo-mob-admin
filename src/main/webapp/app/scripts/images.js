@@ -19,6 +19,7 @@ app.service('ImagesService', function(Parse, $log) {
 
                 (function(file, image) {
                     //create a separate scope to save imgFile.
+                    AlertService.alert('正在保存.');
                     image.save().then(function() {
 
                         var imageRec = new Images();
@@ -26,7 +27,9 @@ app.service('ImagesService', function(Parse, $log) {
                             name: file.name,
                             image: image
                         }).then(function() {
+
                             if (i == files.length) {
+                                AlertService.alert('保存完毕.');
                                 callback();
                             }
                         })

@@ -1,4 +1,4 @@
-app.service('CategoryService', function(Parse, Status, MaskService, $log) {
+app.service('CategoryService', function(Parse, Status, AlertService, $log) {
     var Category = Parse.Object.extend("Category");
     var Lang = Parse.Object.extend("Lang");
     var cachedResult;
@@ -18,10 +18,10 @@ app.service('CategoryService', function(Parse, Status, MaskService, $log) {
                 cateQuery.include('lang');
                 cateQuery.ascending("updatedAt");
                 cateQuery.matchesQuery('lang', langQuery);
-                MaskService.start();
+                AlertService.alert("正在查询");
                 cateQuery.find().then(function(results) {
                     $log.log('categories ', results)
-                    MaskService.stop()
+                    AlertService.alert("查询完毕");
                     callback(results);
                 });
             };
@@ -34,7 +34,7 @@ app.service('CategoryService', function(Parse, Status, MaskService, $log) {
 
 });
 
-app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, MaskService, CategoryService, LangService, LangEvent) {
+app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, AlertService, CategoryService, LangService, LangEvent) {
     $log.log('CategoryCtrl')
 
     var langCode = $location.search().lang;
@@ -64,7 +64,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
     $scope.submit = function(item) {
         $log.log('save category');
         $log.log('current lang, ', LangService.currentLang());
-
+        AlertService.alert("正在保存");
         var attrs = $scope.selectedItem.attributes;
         if (!$scope.selectedItem.id) {
             $scope.selectedItem = CategoryService.new();
@@ -75,6 +75,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
             'status': Status.new
         }).then(function() {
             $log.log('saved success');
+            AlertService.alert("保存完毕");
             $scope.query();
             $scope.$apply();
         });

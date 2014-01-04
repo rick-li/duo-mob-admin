@@ -21,13 +21,13 @@
                             <table class="table table-bordered table-hover table-striped tablesorter">
                                 <thead>
                                     <tr>
-                                        <th>Order <i class="fa fa-sort"></i>
+                                        <th>顺序 <i class="fa fa-sort"></i>
                                         </th>
-                                        <th>Name <i class="fa fa-sort"></i>
+                                        <th>名字 <i class="fa fa-sort"></i>
                                         </th>
-                                        <th>Language <i class="fa fa-sort"></i>
+                                        <th>语言 <i class="fa fa-sort"></i>
                                         </th>
-                                        <th>Date <i class="fa fa-sort"></i>
+                                        <th>更新日期 <i class="fa fa-sort"></i>
                                         </th>
                                         <th></th>
                                     </tr>
@@ -60,17 +60,17 @@
         <div class="col-md-4">
             <form role="form" ng-submit="submit(selectedItem)">
                 <div class="form-group">
-                    <label for="categoryName">Category</label>
+                    <label for="categoryName">分类</label>
                     <input type="text" class="form-control" id="questionsetName" placeholder="" ng-model="selectedItem.attributes.name" required>
                 </div>
 
                 <div class="form-group">
 
                     <div class="col-sm-6">
-                        <button type="submit" class="btn btn-default">Save/Update</button>
+                        <button type="submit" class="btn btn-default">保存</button>
                     </div>
                     <div class="col-sm-6">
-                        <button type='button' class="btn btn-default" ng-click="selectedItem={}">Add New</button>
+                        <button type='button' class="btn btn-default" ng-click="selectedItem={}">新增</button>
                     </div>
                 </div>
             </form>

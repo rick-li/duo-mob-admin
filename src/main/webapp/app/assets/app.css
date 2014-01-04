@@ -45,6 +45,20 @@
 
 }
 
+.duo-nav-status {
+
+    float:left;
+
+    color: #fff;
+
+}
+
+.duo-nav-status span {
+
+    line-height: 50px;
+
+}
+
 .duo-hidden {
 
     display: none;

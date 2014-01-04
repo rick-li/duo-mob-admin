@@ -22,7 +22,7 @@ app.service('PushService', function(Parse, AlertService) {
     }
 });
 
-app.service('ArticleService', function(Parse, Status, MaskService, LangService, $log) {
+app.service('ArticleService', function(Parse, Status, AlertService, LangService, $log) {
     var Article = Parse.Object.extend("Article");
 
     return {
@@ -35,13 +35,13 @@ app.service('ArticleService', function(Parse, Status, MaskService, LangService, 
             if (category !== 'all') {
                 query.equalTo('category', category);
             }
-
+            query.equalTo('lang', LangService.currentLang());
             query.notEqualTo('status', Status.deleted);
             query.include(['category', 'image', 'lang']);
 
-            MaskService.start();
+            AlertService.alert("正在查询");
             query.find().then(function(results) {
-                MaskService.stop();
+                AlertService.alert("查询完毕");
                 $log.log('articles', results);
                 callback(results);
             });
@@ -50,9 +50,9 @@ app.service('ArticleService', function(Parse, Status, MaskService, LangService, 
             var query = new Parse.Query(Article);
             query.notEqualTo('status', Status.deleted);
             query.include(['category', 'image', 'lang']);
-            MaskService.start();
+            AlertService.alert("正在查询");
             query.get(id).then(function(results) {
-                MaskService.stop();
+                AlertService.alert("查询完毕");
                 $log.log('articles', results);
                 callback(results);
             });
@@ -60,7 +60,7 @@ app.service('ArticleService', function(Parse, Status, MaskService, LangService, 
     }
 });
 
-app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, MaskService, ArticleEvent, PushService) {
+app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, AlertService, ArticleEvent, PushService) {
 
     $scope.currentLang = $location.search().lang;
     $scope.activeCategoryId = $routeParams.categoryId;

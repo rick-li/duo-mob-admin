@@ -7265,37 +7265,19 @@ app.controller('BodyCtrl', function($scope, $rootScope, MaskEvent, AlertEvent, $
     $scope.alertMsg = '';
 
     $rootScope.$on(AlertEvent, function(e, message) {
-        $scope.alertDismissed = false;
-        $scope.alertMsg = message;
-        $scope.$apply();
-        $timeout(function() {
-            $scope.alertDismissed = true;
-            $scope.$apply();
-        }, 3000)
+        // $scope.alertDismissed = false;
+        // $scope.alertMsg = message;
+        // $scope.$apply();
+        // $timeout(function() {
+        //     $scope.alertDismissed = true;
+        //     $scope.$apply();
+        // }, 3000)
+        $scope.status = message;
     });
 
-    $rootScope.$on(MaskEvent, function(e, type) {
-        $log.log('mask event', type)
-        if (type === 'start') {
-            $scope.loadingMask = true;
-        } else {
-            $scope.loadingMask = false;
-        }
-    });
+
 });
 
-app.service('MaskService', ['$rootScope', 'MaskEvent', '$log',
-    function($rootScope, MaskEvent, $log) {
-        return {
-            'start': function() {
-                $rootScope.$emit(MaskEvent, 'start');
-            },
-            'stop': function() {
-                $rootScope.$emit(MaskEvent, 'stop');
-            }
-        }
-    }
-]);
 
 app.directive('ngConfirmClick', [
     function() {
@@ -7413,7 +7395,7 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
         $scope.currentUser = null;
         $location.path('/login')
     };
-});;app.service('CategoryService', function(Parse, Status, MaskService, $log) {
+});;app.service('CategoryService', function(Parse, Status, AlertService, $log) {
     var Category = Parse.Object.extend("Category");
     var Lang = Parse.Object.extend("Lang");
     var cachedResult;
@@ -7433,10 +7415,10 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
                 cateQuery.include('lang');
                 cateQuery.ascending("updatedAt");
                 cateQuery.matchesQuery('lang', langQuery);
-                MaskService.start();
+                AlertService.alert("正在查询");
                 cateQuery.find().then(function(results) {
                     $log.log('categories ', results)
-                    MaskService.stop()
+                    AlertService.alert("查询完毕");
                     callback(results);
                 });
             };
@@ -7449,7 +7431,7 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
 
 });
 
-app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, MaskService, CategoryService, LangService, LangEvent) {
+app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, AlertService, CategoryService, LangService, LangEvent) {
     $log.log('CategoryCtrl')
 
     var langCode = $location.search().lang;
@@ -7479,7 +7461,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
     $scope.submit = function(item) {
         $log.log('save category');
         $log.log('current lang, ', LangService.currentLang());
-
+        AlertService.alert("正在保存");
         var attrs = $scope.selectedItem.attributes;
         if (!$scope.selectedItem.id) {
             $scope.selectedItem = CategoryService.new();
@@ -7490,6 +7472,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
             'status': Status.new
         }).then(function() {
             $log.log('saved success');
+            AlertService.alert("保存完毕");
             $scope.query();
             $scope.$apply();
         });
@@ -7518,7 +7501,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
     }
 });
 
-app.service('ArticleService', function(Parse, Status, MaskService, LangService, $log) {
+app.service('ArticleService', function(Parse, Status, AlertService, LangService, $log) {
     var Article = Parse.Object.extend("Article");
 
     return {
@@ -7531,13 +7514,13 @@ app.service('ArticleService', function(Parse, Status, MaskService, LangService, 
             if (category !== 'all') {
                 query.equalTo('category', category);
             }
-
+            query.equalTo('lang', LangService.currentLang());
             query.notEqualTo('status', Status.deleted);
             query.include(['category', 'image', 'lang']);
 
-            MaskService.start();
+            AlertService.alert("正在查询");
             query.find().then(function(results) {
-                MaskService.stop();
+                AlertService.alert("查询完毕");
                 $log.log('articles', results);
                 callback(results);
             });
@@ -7546,9 +7529,9 @@ app.service('ArticleService', function(Parse, Status, MaskService, LangService, 
             var query = new Parse.Query(Article);
             query.notEqualTo('status', Status.deleted);
             query.include(['category', 'image', 'lang']);
-            MaskService.start();
+            AlertService.alert("正在查询");
             query.get(id).then(function(results) {
-                MaskService.stop();
+                AlertService.alert("查询完毕");
                 $log.log('articles', results);
                 callback(results);
             });
@@ -7556,7 +7539,7 @@ app.service('ArticleService', function(Parse, Status, MaskService, LangService, 
     }
 });
 
-app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, MaskService, ArticleEvent, PushService) {
+app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, AlertService, ArticleEvent, PushService) {
 
     $scope.currentLang = $location.search().lang;
     $scope.activeCategoryId = $routeParams.categoryId;
@@ -7679,6 +7662,7 @@ app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $
 
                 (function(file, image) {
                     //create a separate scope to save imgFile.
+                    AlertService.alert('正在保存.');
                     image.save().then(function() {
 
                         var imageRec = new Images();
@@ -7686,7 +7670,9 @@ app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $
                             name: file.name,
                             image: image
                         }).then(function() {
+
                             if (i == files.length) {
+                                AlertService.alert('保存完毕.');
                                 callback();
                             }
                         })
@@ -7803,6 +7789,7 @@ app.controller('ImagesCtrl', function($scope, $log, $window, ImagesService) {
     $scope.save = function() {
         $log.log('save');
         // $scope.activeDetailItem.set('image', $scope.currentImage);
+        AlertService.alert("正在保存");
         var attrs = $scope.activeDetailItem.attributes;
         $scope.saveBtnText = "正在保存...";
         $scope.activeDetailItem.save({
@@ -7820,7 +7807,7 @@ app.controller('ImagesCtrl', function($scope, $log, $window, ImagesService) {
             //dismiss the popup.
 
             $scope.$apply();
-            AlertService.alert('Article saved.');
+            AlertService.alert('保存完毕.');
         });
     };
 

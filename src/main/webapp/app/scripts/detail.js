@@ -60,6 +60,7 @@ app.controller('EditCtrl', function($scope, $rootScope, $routeParams, $location,
     $scope.save = function() {
         $log.log('save');
         // $scope.activeDetailItem.set('image', $scope.currentImage);
+        AlertService.alert("正在保存");
         var attrs = $scope.activeDetailItem.attributes;
         $scope.saveBtnText = "正在保存...";
         $scope.activeDetailItem.save({
@@ -77,7 +78,7 @@ app.controller('EditCtrl', function($scope, $rootScope, $routeParams, $location,
             //dismiss the popup.
 
             $scope.$apply();
-            AlertService.alert('Article saved.');
+            AlertService.alert('保存完毕.');
         });
     };
 

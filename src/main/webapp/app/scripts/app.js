@@ -115,37 +115,19 @@ app.controller('BodyCtrl', function($scope, $rootScope, MaskEvent, AlertEvent, $
     $scope.alertMsg = '';
 
     $rootScope.$on(AlertEvent, function(e, message) {
-        $scope.alertDismissed = false;
-        $scope.alertMsg = message;
-        $scope.$apply();
-        $timeout(function() {
-            $scope.alertDismissed = true;
-            $scope.$apply();
-        }, 3000)
+        // $scope.alertDismissed = false;
+        // $scope.alertMsg = message;
+        // $scope.$apply();
+        // $timeout(function() {
+        //     $scope.alertDismissed = true;
+        //     $scope.$apply();
+        // }, 3000)
+        $scope.status = message;
     });
 
-    $rootScope.$on(MaskEvent, function(e, type) {
-        $log.log('mask event', type)
-        if (type === 'start') {
-            $scope.loadingMask = true;
-        } else {
-            $scope.loadingMask = false;
-        }
-    });
+
 });
 
-app.service('MaskService', ['$rootScope', 'MaskEvent', '$log',
-    function($rootScope, MaskEvent, $log) {
-        return {
-            'start': function() {
-                $rootScope.$emit(MaskEvent, 'start');
-            },
-            'stop': function() {
-                $rootScope.$emit(MaskEvent, 'stop');
-            }
-        }
-    }
-]);
 
 app.directive('ngConfirmClick', [
     function() {
