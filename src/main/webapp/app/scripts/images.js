@@ -1,4 +1,4 @@
-app.service('ImagesService', function(Parse, $log) {
+app.service('ImagesService', function(Parse, $log, AlertService) {
     var Images = Parse.Object.extend("Images");
     return {
 

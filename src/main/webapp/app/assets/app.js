@@ -7641,7 +7641,7 @@ app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $
         $log.log('Push ', item.get('title'));
         PushService.push(item);
     };
-});;app.service('ImagesService', function(Parse, $log) {
+});;app.service('ImagesService', function(Parse, $log, AlertService) {
     var Images = Parse.Object.extend("Images");
     return {
 
