@@ -1,3 +1,40 @@
+app.service('OrderService', function() {
+    return {
+        moveup: function(collection, item) {
+            var idx = _.indexOf(collection, item);
+            if (idx == 0) {
+                return;
+            }
+            var preItem = collection[idx - 1];
+            var currOrder = item.get('order');
+            item.set('order', preItem.get('order'))
+            preItem.set('order', currOrder)
+
+            collection[idx - 1] = item;
+            collection[idx] = preItem;
+            item.save();
+            preItem.save();
+        },
+
+        movedown: function(collection, item) {
+            var idx = _.indexOf(collection, item);
+            if (idx == collection.length - 1) {
+                return;
+            }
+
+            var nextItem = collection[idx + 1];
+            var currOrder = item.get('order');
+            item.set('order', nextItem.get('order'));
+            nextItem.set('order', currOrder);
+            collection[idx + 1] = item;
+            collection[idx] = nextItem;
+
+            item.save();
+            nextItem.save();
+        }
+    }
+});
+
 app.service('CategoryService', function(Parse, Status, AlertService, $log) {
     var Category = Parse.Object.extend("Category");
     var Lang = Parse.Object.extend("Lang");
@@ -34,7 +71,7 @@ app.service('CategoryService', function(Parse, Status, AlertService, $log) {
 
 });
 
-app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, AlertService, CategoryService, LangService, LangEvent) {
+app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, AlertService, CategoryService, OrderService, LangService, LangEvent) {
     $log.log('CategoryCtrl')
 
     var langCode = $location.search().lang;
@@ -52,6 +89,14 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
 
     };
     $scope.query();
+
+    $scope.moveup = function(item) {
+        OrderService.moveup($scope.categories, item);
+    }
+
+    $scope.movedown = function(item) {
+        OrderService.movedown($scope.categories, item);
+    }
 
     $scope.delete = function(item) {
 

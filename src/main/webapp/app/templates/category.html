@@ -35,7 +35,21 @@
                                 <tbody>
                                     {{selectedLang.attributes.name}}
                                     <tr ng-repeat="item in categories | filter:item.status!='deleted'" ng-click="$parent.selectedItem = item;$parent.selectedLang = selectedItem.get('lang')" ng-class="{success:$parent.selectedItem.id == item.id}">
-                                        <td>{{item.attributes.order}}</td>
+                                        <td>
+                                            <div style="float:left">{{item.attributes.order}}</div>
+                                            <div style="float:right">
+                                                <div class="duo-order-item">
+                                                    <button type="button" class="btn btn-default" ng-click="moveup(item)"><i class="fa fa-sort-up"></i> 
+                                                    </button>
+                                                </div>
+                                                <div>
+                                                    <button type="button" class="btn btn-default" ng-click="movedown(item)">
+                                                        <i class=" fa fa-sort-down ">
+                                                            </i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
 
                                         <td>{{item.attributes.name}}</td>
                                         <td>{{item.get('lang').get('name')}}</td>

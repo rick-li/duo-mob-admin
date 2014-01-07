@@ -7327,6 +7327,9 @@ app.service('LangService', function($rootScope, $route, $log, $location, Parse, 
     });
 
     return {
+        /**
+         * Set current langCode if langCode present.
+         **/
         currentLangCode: function(langCode) {
             if (langCode && currentLangCode != langCode) {
                 currentLangCode = langCode;
@@ -7395,7 +7398,44 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
         $scope.currentUser = null;
         $location.path('/login')
     };
-});;app.service('CategoryService', function(Parse, Status, AlertService, $log) {
+});;app.service('OrderService', function() {
+    return {
+        moveup: function(collection, item) {
+            var idx = _.indexOf(collection, item);
+            if (idx == 0) {
+                return;
+            }
+            var preItem = collection[idx - 1];
+            var currOrder = item.get('order');
+            item.set('order', preItem.get('order'))
+            preItem.set('order', currOrder)
+
+            collection[idx - 1] = item;
+            collection[idx] = preItem;
+            item.save();
+            preItem.save();
+        },
+
+        movedown: function(collection, item) {
+            var idx = _.indexOf(collection, item);
+            if (idx == collection.length - 1) {
+                return;
+            }
+
+            var nextItem = collection[idx + 1];
+            var currOrder = item.get('order');
+            item.set('order', nextItem.get('order'));
+            nextItem.set('order', currOrder);
+            collection[idx + 1] = item;
+            collection[idx] = nextItem;
+
+            item.save();
+            nextItem.save();
+        }
+    }
+});
+
+app.service('CategoryService', function(Parse, Status, AlertService, $log) {
     var Category = Parse.Object.extend("Category");
     var Lang = Parse.Object.extend("Lang");
     var cachedResult;
@@ -7431,7 +7471,7 @@ app.controller('NavCtrl', function($scope, $rootScope, $log, $location, Parse, U
 
 });
 
-app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, AlertService, CategoryService, LangService, LangEvent) {
+app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Parse, Status, AlertService, CategoryService, OrderService, LangService, LangEvent) {
     $log.log('CategoryCtrl')
 
     var langCode = $location.search().lang;
@@ -7449,6 +7489,14 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
 
     };
     $scope.query();
+
+    $scope.moveup = function(item) {
+        OrderService.moveup($scope.categories, item);
+    }
+
+    $scope.movedown = function(item) {
+        OrderService.movedown($scope.categories, item);
+    }
 
     $scope.delete = function(item) {
 
@@ -7479,21 +7527,24 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
             $scope.$apply();
         });
     };
-});;app.service('PushService', function(Parse, AlertService) {
+});;app.service('PushService', function(Parse, AlertService, LangService) {
     return {
         push: function(item) {
             Parse.Push.send({
-                channels: ["zh-tw"],
+                channels: [LangService.currentLangCode()],
                 data: {
-                    alert: item.get('intro')
-
+                    alert: item.get('title') + '\n' + item.get('intro'),
+                    badge: "Increment",
+                    title: item.get('title'),
+                    objectId: item.id,
+                    categoryId: item.get('category').id
                 }
             }, {
                 success: function() {
                     AlertService.alert('推送' + item.get('title') + '成功');
                 },
                 error: function(error) {
-                    alert('push failed');
+                    alert('推送失败', error.message);
                 }
             });
 
@@ -7541,7 +7592,7 @@ app.service('ArticleService', function(Parse, Status, AlertService, LangService,
     }
 });
 
-app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, AlertService, ArticleEvent, PushService) {
+app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, AlertService, OrderService, ArticleEvent, PushService) {
 
     $scope.currentLang = $location.search().lang;
     $scope.activeCategoryId = $routeParams.categoryId;
@@ -7586,40 +7637,13 @@ app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $
     };
 
     $scope.moveup = function(item) {
-
-        var idx = _.indexOf($scope.articles, item);
-
-        if (idx == 0) {
-            return;
-        }
-        var preItem = $scope.articles[idx - 1];
-        var currOrder = item.get('order');
-        item.set('order', preItem.get('order'))
-        preItem.set('order', currOrder)
-
-        $scope.articles[idx - 1] = item;
-        $scope.articles[idx] = preItem;
-
-        item.save();
-        preItem.save();
+        OrderService.moveup($scope.articles, item);
     }
 
     $scope.movedown = function(item) {
-        var idx = _.indexOf($scope.articles, item);
-        if (idx == $scope.articles.length - 1) {
-            return;
-        }
-
-        var nextItem = $scope.articles[idx + 1];
-        var currOrder = item.get('order');
-        item.set('order', nextItem.get('order'));
-        nextItem.set('order', currOrder);
-        $scope.articles[idx + 1] = item;
-        $scope.articles[idx] = nextItem;
-
-        item.save();
-        nextItem.save();
+        OrderService.movedown($scope.articles, item);
     }
+
     $scope.new = function() {
         $location.url("/content/category/" + $scope.activeCategoryId + "/article/new?lang=" + $scope.currentLang);
     };
@@ -7876,25 +7900,69 @@ var ImagesModalInstanceCtrl = function($scope, $modalInstance, $log, items, sele
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
     };
-};;app.controller('LoginCtrl', function($scope, $rootScope, $location, $log, Parse, UserEvent, LangService) {
+};;app.controller('LoginCtrl', function($scope, $rootScope, $location, $log, Parse, UserEvent, LangService, $window) {
     $scope.currentUser = Parse.User.current();
+    $scope.newUser = {};
     $log.log('currentUser, ', $scope.currentUser)
     if ($scope.currentUser) {
         $log.log('currentLang ', LangService.currentLangCode());
         $location.url('/content/category/all?lang=' + LangService.currentLangCode());
     }
+
+    $scope.register = function() {
+        if ($scope.newUser.password != $scope.newUser.passwordRepeat) {
+            $window.alert("密码不一致");
+        }
+        var user = new Parse.User();
+        user.set("username", $scope.newUser.name);
+        user.set("password", $scope.newUser.password);
+        user.set("email", $scope.newUser.email);
+
+        user.signUp(null, {
+            'success': function() {
+                $window.alert("注册成功, 请注意查收确认邮件。");
+            },
+            'error': function(error) {
+                $window.alert("无法注册 " + error.message);
+            }
+        });
+    }
+
+    $scope.reset = function() {
+        Parse.User.requestPasswordReset($scope.resetEmail, {
+            success: function() {
+                $window.alert("已申请重设密码，请查收邮件。");
+            },
+            error: function(e) {
+
+                $window.alert("出错: " + e.code + " " + e.message);
+            }
+        });
+    }
+
     $scope.login = function() {
-        $log.log('name: ' + $scope.username + " password: " + $scope.password);
+
         Parse.User.logIn($scope.username, $scope.password, {
             success: function(user) {
+                if (!user.get('emailVerified')) {
+                    $window.alert("请通过邮件验证");
+                    user.set('email', user.get('email'));
+                    user.save();
+
+                    return;
+                }
                 //NOT in angular land, you must call $apply() to invode digest;
                 $log.log('login success');
-                $log.log(user);
+
                 $scope.currentUser = user;
                 $rootScope.$emit(UserEvent, user);
                 $log.log('location path change');
                 $location.path('/content');
                 $scope.$apply();
+            },
+            error: function(e) {
+                $log.log(e)
+                $window.alert("无法登陆");
             }
         });
     };

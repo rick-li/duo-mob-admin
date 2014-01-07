@@ -177,6 +177,9 @@ app.service('LangService', function($rootScope, $route, $log, $location, Parse, 
     });
 
     return {
+        /**
+         * Set current langCode if langCode present.
+         **/
         currentLangCode: function(langCode) {
             if (langCode && currentLangCode != langCode) {
                 currentLangCode = langCode;

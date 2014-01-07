@@ -1,18 +1,21 @@
-app.service('PushService', function(Parse, AlertService) {
+app.service('PushService', function(Parse, AlertService, LangService) {
     return {
         push: function(item) {
             Parse.Push.send({
-                channels: ["zh-tw"],
+                channels: [LangService.currentLangCode()],
                 data: {
-                    alert: item.get('intro')
-
+                    alert: item.get('title') + '\n' + item.get('intro'),
+                    badge: "Increment",
+                    title: item.get('title'),
+                    objectId: item.id,
+                    categoryId: item.get('category').id
                 }
             }, {
                 success: function() {
                     AlertService.alert('推送' + item.get('title') + '成功');
                 },
                 error: function(error) {
-                    alert('push failed');
+                    alert('推送失败', error.message);
                 }
             });
 
@@ -60,7 +63,7 @@ app.service('ArticleService', function(Parse, Status, AlertService, LangService,
     }
 });
 
-app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, AlertService, ArticleEvent, PushService) {
+app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $location, Status, CategoryService, ArticleService, AlertService, OrderService, ArticleEvent, PushService) {
 
     $scope.currentLang = $location.search().lang;
     $scope.activeCategoryId = $routeParams.categoryId;
@@ -105,40 +108,13 @@ app.controller('ContentCtrl', function($scope, $rootScope, $routeParams, $log, $
     };
 
     $scope.moveup = function(item) {
-
-        var idx = _.indexOf($scope.articles, item);
-
-        if (idx == 0) {
-            return;
-        }
-        var preItem = $scope.articles[idx - 1];
-        var currOrder = item.get('order');
-        item.set('order', preItem.get('order'))
-        preItem.set('order', currOrder)
-
-        $scope.articles[idx - 1] = item;
-        $scope.articles[idx] = preItem;
-
-        item.save();
-        preItem.save();
+        OrderService.moveup($scope.articles, item);
     }
 
     $scope.movedown = function(item) {
-        var idx = _.indexOf($scope.articles, item);
-        if (idx == $scope.articles.length - 1) {
-            return;
-        }
-
-        var nextItem = $scope.articles[idx + 1];
-        var currOrder = item.get('order');
-        item.set('order', nextItem.get('order'));
-        nextItem.set('order', currOrder);
-        $scope.articles[idx + 1] = item;
-        $scope.articles[idx] = nextItem;
-
-        item.save();
-        nextItem.save();
+        OrderService.movedown($scope.articles, item);
     }
+
     $scope.new = function() {
         $location.url("/content/category/" + $scope.activeCategoryId + "/article/new?lang=" + $scope.currentLang);
     };
