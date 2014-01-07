@@ -44,7 +44,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
         $scope.query();
     });
 
-    $scope.query = function() {
+    var query = $scope.query = function() {
         CategoryService.queryByLangCode(langCode, function(categories) {
             $scope.categories = categories;
             $scope.$apply();
@@ -54,10 +54,12 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
     $scope.query();
 
     $scope.delete = function(item) {
-        item.destroy().then(function() {
-            $log.log('delete success');
-            $scope.query();
-            $scope.$apply();
+
+        item.set('status', Status.deleted);
+        item.save({
+            'status': Status.deleted
+        }).then(function() {
+            query();
         });
     }
 
