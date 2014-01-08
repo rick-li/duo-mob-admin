@@ -7542,6 +7542,7 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
                     alert: item.get('title') + '\n' + item.get('intro'),
                     badge: "Increment",
                     title: item.get('title'),
+                    sound: 'default',
                     oid: item.id,
                     cid: item.get('category').id
                 }
