@@ -7507,7 +7507,12 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
             query();
         });
     }
-
+    var currentUser = Parse.User.current();
+    $log.log('current user is ', currentUser);
+    if (!currentUser) {
+        alert("用户不合法，请重新登录");
+        return;
+    }
     $scope.submit = function(item) {
         $log.log('save category');
         $log.log('current lang, ', LangService.currentLang());
@@ -7519,7 +7524,8 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
         $scope.selectedItem.save({
             'name': attrs.name,
             'lang': LangService.currentLang(),
-            'status': Status.new
+            'status': Status.new,
+            'updatedBy': currentUser
         }).then(function() {
             $log.log('saved success');
             AlertService.alert("保存完毕");
@@ -7810,8 +7816,12 @@ app.controller('ImagesCtrl', function($scope, $log, $window, ImagesService) {
 
     }, true);
 
-
-
+    var currentUser = Parse.User.current();
+    $log.log('current user is ', currentUser);
+    if (!currentUser) {
+        alert("用户不合法，请重新登录");
+        return;
+    }
     $scope.save = function() {
         $log.log('save');
         // $scope.activeDetailItem.set('image', $scope.currentImage);
@@ -7823,9 +7833,11 @@ app.controller('ImagesCtrl', function($scope, $log, $window, ImagesService) {
             'content': attrs.content,
             'intro': attrs.intro,
             'image': $scope.currentImage,
+            'url': attrs.url,
             'category': $scope.activeCategory,
             'status': Status.new,
-            'lang': LangService.currentLang()
+            'lang': LangService.currentLang(),
+            'updatedBy': currentUser
         }).then(function() {
             $log.log('saved success');
             AlertService.alert('保存完毕.');

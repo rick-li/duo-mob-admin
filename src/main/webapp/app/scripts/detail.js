@@ -55,8 +55,12 @@ app.controller('EditCtrl', function($scope, $rootScope, $routeParams, $location,
 
     }, true);
 
-
-
+    var currentUser = Parse.User.current();
+    $log.log('current user is ', currentUser);
+    if (!currentUser) {
+        alert("用户不合法，请重新登录");
+        return;
+    }
     $scope.save = function() {
         $log.log('save');
         // $scope.activeDetailItem.set('image', $scope.currentImage);
@@ -68,9 +72,11 @@ app.controller('EditCtrl', function($scope, $rootScope, $routeParams, $location,
             'content': attrs.content,
             'intro': attrs.intro,
             'image': $scope.currentImage,
+            'url': attrs.url,
             'category': $scope.activeCategory,
             'status': Status.new,
-            'lang': LangService.currentLang()
+            'lang': LangService.currentLang(),
+            'updatedBy': currentUser
         }).then(function() {
             $log.log('saved success');
             AlertService.alert('保存完毕.');

@@ -107,7 +107,12 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
             query();
         });
     }
-
+    var currentUser = Parse.User.current();
+    $log.log('current user is ', currentUser);
+    if (!currentUser) {
+        alert("用户不合法，请重新登录");
+        return;
+    }
     $scope.submit = function(item) {
         $log.log('save category');
         $log.log('current lang, ', LangService.currentLang());
@@ -119,7 +124,8 @@ app.controller('CategoryCtrl', function($scope, $rootScope, $location, $log, Par
         $scope.selectedItem.save({
             'name': attrs.name,
             'lang': LangService.currentLang(),
-            'status': Status.new
+            'status': Status.new,
+            'updatedBy': currentUser
         }).then(function() {
             $log.log('saved success');
             AlertService.alert("保存完毕");

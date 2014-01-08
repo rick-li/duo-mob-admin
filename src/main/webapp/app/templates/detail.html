@@ -15,7 +15,7 @@
                         <div class="col-sm-5">
                             <div class="form-group">
                                 <label for="">标题</label>
-                                <input type="text" class="form-control" placeholder="title" ng-model="activeDetailItem.attributes.title" required autofocus>
+                                <input type="text" class="form-control" placeholder="" ng-model="activeDetailItem.attributes.title" required autofocus>
 
                             </div>
 
@@ -42,6 +42,11 @@
                             <div class="form-group">
                                 <label for="">文章内容</label>
                                 <ckeditor content="activeDetailItem.attributes.content"></ckeditor>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="">全文链接</label>
+                                <input placeholder="https://" ng-model="activeDetailItem.attributes.url" class="form-control"></input>
 
 
                             </div>
