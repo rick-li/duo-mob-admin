@@ -32,7 +32,7 @@
                                             </th>
                                             <th>分类 <i class="fa fa-sort"></i>
                                             </th>
-                                            <th>状态<i class="fa fa-sort"></i>
+                                            <th>置顶<i class="fa fa-sort"></i>
                                             </th>
                                             <th>更新日期 <i class="fa fa-sort"></i>
                                             </th>
@@ -60,7 +60,7 @@
                                             <td>{{item.attributes.title}}</td>
                                             <td>{{item.attributes.intro}}</td>
                                             <td>{{item.get('category').get('name')}}</td>
-                                            <td>{{item.attributes.status}}</td>
+                                            <td>{{item.attributes.sticky?"是":"否"}}</td>
                                             <td>{{item.updatedAt}}</td>
                                             <td>
                                                 <button type="button " class="btn btn-default " ng-click="edit(item) "><i class="fa fa-pencil "></i>
