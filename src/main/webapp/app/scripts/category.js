@@ -53,7 +53,7 @@ app.service('CategoryService', function(Parse, Status, AlertService, $log) {
 
                 cateQuery.notEqualTo('status', Status.deleted);
                 cateQuery.include('lang');
-                cateQuery.ascending("updatedAt");
+                cateQuery.ascending("order");
                 cateQuery.matchesQuery('lang', langQuery);
                 AlertService.alert("正在查询");
                 cateQuery.find().then(function(results) {

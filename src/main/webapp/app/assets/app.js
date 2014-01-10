@@ -7453,7 +7453,7 @@ app.service('CategoryService', function(Parse, Status, AlertService, $log) {
 
                 cateQuery.notEqualTo('status', Status.deleted);
                 cateQuery.include('lang');
-                cateQuery.ascending("updatedAt");
+                cateQuery.ascending("order");
                 cateQuery.matchesQuery('lang', langQuery);
                 AlertService.alert("正在查询");
                 cateQuery.find().then(function(results) {
@@ -7835,6 +7835,7 @@ app.controller('ImagesCtrl', function($scope, $log, $window, ImagesService) {
             'intro': attrs.intro,
             'image': $scope.currentImage,
             'url': attrs.url,
+            'sticky': attrs.sticky,
             'category': $scope.activeCategory,
             'status': Status.new,
             'lang': LangService.currentLang(),
