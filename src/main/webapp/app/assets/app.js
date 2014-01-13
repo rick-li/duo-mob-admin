@@ -7221,7 +7221,8 @@ app.directive('ckeditor', function($log) {
             $log.log('attr is ', attr);
 
             var ck = CKEDITOR.replace(elm[0], {
-                height: '350px'
+                height: '350px',
+                language: 'zh-tw'
             });
             var contentUnWatcher = scope.$watch('content', function(newContent) {
                 $log.log('content changed, ', newContent);
